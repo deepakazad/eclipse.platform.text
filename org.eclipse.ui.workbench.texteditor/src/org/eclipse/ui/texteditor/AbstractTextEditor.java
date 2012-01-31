@@ -81,6 +81,9 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourceAttributes;
+
 import org.eclipse.text.undo.DocumentUndoManagerRegistry;
 import org.eclipse.text.undo.IDocumentUndoManager;
 
@@ -1156,6 +1159,25 @@ public abstract class AbstractTextEditor extends EditorPart implements ITextEdit
 		 */
 		public void run() {
 			toggleOverwriteMode();
+		}
+	}
+
+	/**
+	 * Action to toggle the read-only state.
+	 * 
+	 * @since 3.8
+	 */
+	class ToggleReadOnlyStateAction extends ResourceAction {
+
+		public ToggleReadOnlyStateAction(ResourceBundle bundle, String prefix) {
+			super(bundle, prefix);
+		}
+
+		/*
+		 * @see org.eclipse.jface.action.IAction#run()
+		 */
+		public void run() {
+			toggleReadOnlyState();
 		}
 	}
 
@@ -5552,6 +5574,10 @@ public abstract class AbstractTextEditor extends EditorPart implements ITextEdit
 		setAction(ITextEditorActionDefinitionIds.TOGGLE_OVERWRITE, action);
 		textWidget.setKeyBinding(SWT.INSERT, SWT.NULL);
 
+		action= new ToggleReadOnlyStateAction(EditorMessages.getBundleForConstructedKeys(), "Editor.ToggleReadOnlyState."); //$NON-NLS-1$
+		action.setActionDefinitionId(ITextEditorActionDefinitionIds.TOGGLE_READ_ONLY);
+		setAction(ITextEditorActionDefinitionIds.TOGGLE_READ_ONLY, action);
+
 		action=  new ScrollLinesAction(-1);
 		action.setActionDefinitionId(ITextEditorActionDefinitionIds.SCROLL_LINE_UP);
 		setAction(ITextEditorActionDefinitionIds.SCROLL_LINE_UP, action);
@@ -6471,6 +6497,29 @@ public abstract class AbstractTextEditor extends EditorPart implements ITextEdit
 			fSourceViewer.getTextWidget().invokeAction(ST.TOGGLE_OVERWRITE);
 			handleInsertModeChanged();
 		}
+	}
+
+	private void toggleReadOnlyState() {
+		IEditorInput editorInput= getEditorInput();
+		IFile file= (IFile)editorInput.getAdapter(IFile.class);
+		if (file != null) {
+			toggleWritable(file);
+		}
+	}
+
+	private IStatus toggleWritable(final IFile file) {
+		ResourceAttributes attributes= file.getResourceAttributes();
+		if (attributes != null) {
+			attributes.setReadOnly(!attributes.isReadOnly());
+		}
+		try {
+			file.setResourceAttributes(attributes);
+		} catch (CoreException e) {
+			return e.getStatus();
+		}
+		updateState(getEditorInput());
+		updateStatusField(ITextEditorActionConstants.STATUS_CATEGORY_ELEMENT_STATE);
+		return Status.OK_STATUS;
 	}
 
 	/**

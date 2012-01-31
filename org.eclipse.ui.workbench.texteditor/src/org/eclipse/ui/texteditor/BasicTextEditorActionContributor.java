@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2009 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -94,7 +94,7 @@ public class BasicTextEditorActionContributor extends EditorActionBarContributor
 	 */
 	private final static StatusFieldDef[] STATUS_FIELD_DEFS= {
 		new StatusFieldDef(ITextEditorActionConstants.STATUS_CATEGORY_FIND_FIELD, null, false, EditorMessages.Editor_FindIncremental_reverse_name.length() + 15),
-		new StatusFieldDef(ITextEditorActionConstants.STATUS_CATEGORY_ELEMENT_STATE, null, true, StatusLineContributionItem.DEFAULT_WIDTH_IN_CHARS + 1),
+		new StatusFieldDef(ITextEditorActionConstants.STATUS_CATEGORY_ELEMENT_STATE, ITextEditorActionDefinitionIds.TOGGLE_READ_ONLY, true, StatusLineContributionItem.DEFAULT_WIDTH_IN_CHARS + 1),
 		new StatusFieldDef(ITextEditorActionConstants.STATUS_CATEGORY_INPUT_MODE, ITextEditorActionDefinitionIds.TOGGLE_OVERWRITE, true, StatusLineContributionItem.DEFAULT_WIDTH_IN_CHARS),
 		new StatusFieldDef(ITextEditorActionConstants.STATUS_CATEGORY_INPUT_POSITION, ITextEditorActionConstants.GOTO_LINE, true, StatusLineContributionItem.DEFAULT_WIDTH_IN_CHARS)
 	};

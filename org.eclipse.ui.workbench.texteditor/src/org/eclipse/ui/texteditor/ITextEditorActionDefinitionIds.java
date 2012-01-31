@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -416,8 +416,17 @@ public interface ITextEditorActionDefinitionIds extends IWorkbenchActionDefiniti
 	String TOGGLE_OVERWRITE= "org.eclipse.ui.edit.text.toggleOverwrite"; //$NON-NLS-1$
 
 	/**
-	 * Action definition id of toggle show selected element only action.
-	 * Value: <code>"org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"</code>
+	 * Action definition id of the toggle read-only state action. Value:
+	 * <code>"org.eclipse.ui.edit.text.toggleReadOnly"</code>
+	 * 
+	 * @since 3.8
+	 */
+	String TOGGLE_READ_ONLY= "org.eclipse.ui.edit.text.toggleReadOnly"; //$NON-NLS-1$
+
+	/**
+	 * Action definition id of toggle show selected element only action. Value:
+	 * <code>"org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"</code>
+	 * 
 	 * @since 3.0
 	 */
 	String TOGGLE_SHOW_SELECTED_ELEMENT_ONLY= "org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"; //$NON-NLS-1$

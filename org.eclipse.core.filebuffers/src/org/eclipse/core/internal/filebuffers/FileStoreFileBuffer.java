@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2008 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,8 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.core.internal.filebuffers;
+
+import java.io.File;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileInfo;
@@ -40,6 +42,10 @@ public abstract class FileStoreFileBuffer extends AbstractFileBuffer  {
 	protected long fSynchronizationStamp= IDocumentExtension4.UNKNOWN_MODIFICATION_STAMP;
 	/** How often the synchronization context has been requested */
 	protected int fSynchronizationContextCount;
+	/** Has element state been validated */
+	protected boolean fIsStateValidated= false;
+	/** The file info */
+	private IFileInfo fInfo;
 
 
 	public FileStoreFileBuffer(TextFileBufferManager manager) {
@@ -55,14 +61,14 @@ public abstract class FileStoreFileBuffer extends AbstractFileBuffer  {
 	abstract protected void commitFileBufferContent(IProgressMonitor monitor, boolean overwrite) throws CoreException;
 
 	public void create(IFileStore fileStore, IProgressMonitor monitor) throws CoreException {
-		IFileInfo info= fileStore.fetchInfo();
+		fInfo= fileStore.fetchInfo();
 		fFileStore= fileStore;
 		if (fLocation == null)
 			fLocation= URIUtil.toPath(fileStore.toURI());
 
 		initializeFileBufferContent(monitor);
-		if (info.exists())
-			fSynchronizationStamp= info.getLastModified();
+		if (fInfo.exists())
+			fSynchronizationStamp= fInfo.getLastModified();
 
 		addFileBufferContentListeners();
 	}
@@ -180,14 +186,47 @@ public abstract class FileStoreFileBuffer extends AbstractFileBuffer  {
 	 * @see org.eclipse.core.filebuffers.IFileBuffer#validateState(org.eclipse.core.runtime.IProgressMonitor, java.lang.Object)
 	 */
 	public void validateState(IProgressMonitor monitor, Object computationContext) throws CoreException {
-		// nop
+		if (!isDisconnected() && !fIsStateValidated) {
+
+			fStatus= null;
+
+			fManager.fireStateChanging(this);
+
+			try {
+				/*if (fFile.isReadOnly()) {
+					IWorkspace workspace= fFile.getWorkspace();
+					fStatus= workspace.validateEdit(new IFile[] { fFile }, computationContext);
+					if (fStatus.isOK())
+						handleFileContentChanged(false, false);//TODO: ???
+				}*/
+
+				if (fInfo.getAttribute(EFS.ATTRIBUTE_READ_ONLY)) {
+					System.out.println("changing read only");
+					fInfo.setAttribute(EFS.ATTRIBUTE_READ_ONLY, false);
+					fFileStore.putInfo(fInfo, EFS.SET_ATTRIBUTES, null);
+				}
+				File file= fFileStore.toLocalFile(EFS.NONE, null);
+				if (!file.canWrite()) {
+
+				}
+
+				fFileStore.fetchInfo();
+
+			} catch (RuntimeException x) {
+				fManager.fireStateChangeFailed(this);
+				throw x;
+			}
+
+			fIsStateValidated= fStatus == null || fStatus.getSeverity() != IStatus.CANCEL;
+			fManager.fireStateValidationChanged(this, fIsStateValidated);
+		}
 	}
 
 	/*
 	 * @see org.eclipse.core.filebuffers.IFileBuffer#isStateValidated()
 	 */
 	public boolean isStateValidated() {
-		return true;
+		return fIsStateValidated;
 	}
 
 	/*
