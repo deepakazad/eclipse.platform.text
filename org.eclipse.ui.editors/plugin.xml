@@ -662,6 +662,28 @@
             textStylePreferenceValue="SQUIGGLES">
       </specification>
       <specification
+            annotationType="org.eclipse.ui.workbench.texteditor.matchingBrackets"
+            colorPreferenceKey="changeIndicationColor"
+            colorPreferenceValue="204,163,205"
+            contributesToHeader="false"
+            highlightPreferenceValue="true"
+            includeOnPreferencePage="true"
+            isGoToNextNavigationTarget="false"
+            isGoToNextNavigationTargetKey="isChangeGoToNextNavigationTarget"
+            isGoToPreviousNavigationTarget="false"
+            isGoToPreviousNavigationTargetKey="isChangeGoToPreviousNavigationTarget"
+            label="Matching Brackets"
+            overviewRulerPreferenceKey="changeIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="false"
+            presentationLayer="0"
+            showInNextPrevDropdownToolbarAction="true"
+            showInNextPrevDropdownToolbarActionKey="showChangeInNextPrevDropdownToolbarAction"
+            textPreferenceKey="changeIndication"
+            textPreferenceValue="false"
+            verticalRulerPreferenceKey="changeIndicationInVerticalRuler"
+            verticalRulerPreferenceValue="true">
+      </specification>
+      <specification
             annotationType="org.eclipse.ui.workbench.texteditor.quickdiffChange"
             colorPreferenceValue="204,163,205"
             isGoToPreviousNavigationTarget="false"
@@ -906,6 +928,7 @@
       <type name="org.eclipse.ui.internal.workbench.texteditor.link.target"/>
       <type name="org.eclipse.ui.internal.workbench.texteditor.link.exit"/>
       <type name="org.eclipse.ui.workbench.texteditor.quickdiffChange"/>
+      <type name="org.eclipse.ui.workbench.texteditor.matchingBrackets"/>
       <type name="org.eclipse.ui.workbench.texteditor.quickdiffAddition"/>
       <type name="org.eclipse.ui.workbench.texteditor.quickdiffDeletion"/>
       <type name="org.eclipse.ui.workbench.texteditor.quickdiffUnchanged"/>
