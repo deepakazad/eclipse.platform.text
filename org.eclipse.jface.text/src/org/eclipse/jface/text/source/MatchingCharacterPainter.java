@@ -119,6 +119,13 @@ public final class MatchingCharacterPainter implements IPainter, PaintListener {
 	private TextListener fTextListener;
 
 	/**
+	 * The annotation corresponding to matching pair characters.
+	 * 
+	 * @since 3.8
+	 */
+	private Annotation fAnnotation;
+
+	/**
 	 * Creates a new MatchingCharacterPainter for the given source viewer using the given character
 	 * pair matcher. The character matcher is not adopted by this painter. Thus, it is not disposed.
 	 * However, this painter requires exclusive access to the given pair matcher.
@@ -131,6 +138,21 @@ public final class MatchingCharacterPainter implements IPainter, PaintListener {
 		fMatcher= matcher;
 		fTextWidget= sourceViewer.getTextWidget();
 		fDocument= fSourceViewer.getDocument();
+	}
+
+	/**
+	 * Creates a new MatchingCharacterPainter for the given source viewer using the given character
+	 * pair matcher. The character matcher is not adopted by this painter. Thus, it is not disposed.
+	 * However, this painter requires exclusive access to the given pair matcher.
+	 * 
+	 * @param sourceViewer the source viewer
+	 * @param matcher the character pair matcher
+	 * @param annotation the annotation
+	 * @since 3.8
+	 */
+	public MatchingCharacterPainter(ISourceViewer sourceViewer, ICharacterPairMatcher matcher, Annotation annotation) {
+		this(sourceViewer, matcher);
+		fAnnotation= annotation;
 	}
 
 	/**
@@ -179,6 +201,7 @@ public final class MatchingCharacterPainter implements IPainter, PaintListener {
 
 		fColor= null;
 		fTextWidget= null;
+		removeAnnotationFromModel();
 	}
 
 	/*
@@ -192,6 +215,7 @@ public final class MatchingCharacterPainter implements IPainter, PaintListener {
 				fPaintPositionManager.unmanagePosition(fPairPosition);
 			if (redraw)
 				handleDrawRequest(null);
+			removeAnnotationFromModel();
 		}
 	}
 
@@ -382,6 +406,7 @@ public final class MatchingCharacterPainter implements IPainter, PaintListener {
 
 				// redraw current highlighting
 				handleDrawRequest(null);
+				addAnnotationToModel();
 
 			} else if (pair.getOffset() != fPairPosition.getOffset() ||
 					pair.getLength() != fPairPosition.getLength() ||
@@ -391,6 +416,7 @@ public final class MatchingCharacterPainter implements IPainter, PaintListener {
 
 				// remove old highlighting
 				handleDrawRequest(null);
+				removeAnnotationFromModel();
 				// update position
 				fPairPosition.isDeleted= false;
 				fPairPosition.offset= pair.getOffset();
@@ -399,6 +425,7 @@ public final class MatchingCharacterPainter implements IPainter, PaintListener {
 				fCharacterPresentAtCaretLocation= characterPresentAtCaretLocation;
 				// apply new highlighting
 				handleDrawRequest(null);
+				addAnnotationToModel();
 
 			}
 		} else {
@@ -414,7 +441,38 @@ public final class MatchingCharacterPainter implements IPainter, PaintListener {
 			fTextWidget.addPaintListener(this);
 			fPaintPositionManager.managePosition(fPairPosition);
 			handleDrawRequest(null);
+			addAnnotationToModel();
 		}
+	}
+
+	/**
+	 * Adds the annotation to the annotation model.
+	 * 
+	 * @since 3.8
+	 */
+	private void addAnnotationToModel() {
+		if (fAnnotation != null)
+			getAnnotationModel().addAnnotation(fAnnotation, fPairPosition);
+	}
+
+	/**
+	 * Removes the annotation from the annotation model.
+	 * 
+	 * @since 3.8
+	 */
+	private void removeAnnotationFromModel() {
+		if (fAnnotation != null)
+			getAnnotationModel().removeAnnotation(fAnnotation);
+	}
+
+	/**
+	 * Returns the annotation model for the source viewer.
+	 * 
+	 * @return the annotation model
+	 * @since 3.8
+	 */
+	private IAnnotationModel getAnnotationModel() {
+		return fSourceViewer.getAnnotationModel();
 	}
 
 	/*
@@ -427,7 +485,7 @@ public final class MatchingCharacterPainter implements IPainter, PaintListener {
 	/**
 	 * Installs or uninstalls the text listener depending on the boolean parameter.
 	 * 
-	 * @param install <code>true</code> to install the text listener, <code>false</code> to uninstall 
+	 * @param install <code>true</code> to install the text listener, <code>false</code> to uninstall
 	 * 
 	 * @since 3.8
 	 */

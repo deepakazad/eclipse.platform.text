@@ -662,6 +662,29 @@
             textStylePreferenceValue="SQUIGGLES">
       </specification>
       <specification
+            annotationType="org.eclipse.ui.workbench.texteditor.matchingBrackets"
+            colorPreferenceKey="matchingBracketsIndicationColor"
+            colorPreferenceValue="0,128,255"
+            contributesToHeader="false"
+            highlightPreferenceKey="matchingBracketsIndicationHighlightInText"
+            highlightPreferenceValue="false"
+            includeOnPreferencePage="true"
+            isGoToNextNavigationTarget="false"
+            isGoToNextNavigationTargetKey="isMatchingBracketsIndicationGoToNextNavigationTarget"
+            isGoToPreviousNavigationTarget="false"
+            isGoToPreviousNavigationTargetKey="isMatchingBracketsIndicationGoToPreviousNavigationTarget"
+            label="%matchingBrackets.label"
+            overviewRulerPreferenceKey="matchingBracketsIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="false"
+            presentationLayer="0"
+            showInNextPrevDropdownToolbarAction="false"
+            showInNextPrevDropdownToolbarActionKey="showMatchingBracketsIndicationInNextPrevDropdownToolbarAction"
+            textPreferenceKey="matchingBracketsIndicationInText"
+            textPreferenceValue="false"
+            verticalRulerPreferenceKey="matchingBracketsIndicationInVerticalRuler"
+            verticalRulerPreferenceValue="true">
+      </specification>
+      <specification
             annotationType="org.eclipse.ui.workbench.texteditor.quickdiffChange"
             colorPreferenceValue="204,163,205"
             isGoToPreviousNavigationTarget="false"
@@ -906,6 +929,7 @@
       <type name="org.eclipse.ui.internal.workbench.texteditor.link.target"/>
       <type name="org.eclipse.ui.internal.workbench.texteditor.link.exit"/>
       <type name="org.eclipse.ui.workbench.texteditor.quickdiffChange"/>
+      <type name="org.eclipse.ui.workbench.texteditor.matchingBrackets"/>
       <type name="org.eclipse.ui.workbench.texteditor.quickdiffAddition"/>
       <type name="org.eclipse.ui.workbench.texteditor.quickdiffDeletion"/>
       <type name="org.eclipse.ui.workbench.texteditor.quickdiffUnchanged"/>

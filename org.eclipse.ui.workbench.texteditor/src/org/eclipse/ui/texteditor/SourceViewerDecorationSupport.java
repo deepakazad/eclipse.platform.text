@@ -43,7 +43,7 @@ import org.eclipse.jface.text.source.ISharedTextColors;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.MatchingCharacterPainter;
 
-
+import org.eclipse.ui.internal.texteditor.MatchingBracketsAnnotation;
 
 
 /**
@@ -251,6 +251,12 @@ public class SourceViewerDecorationSupport {
 	private String fSymbolicFontName;
 	/** The font change listener */
 	private FontPropertyChangeListener fFontPropertyChangeListener;
+	/**
+	 * The matching brackets annotation.
+	 * 
+	 * @since 3.8
+	 */
+	private MatchingBracketsAnnotation fMatchingBracketsAnnotation;
 
 
 	/**
@@ -556,10 +562,12 @@ public class SourceViewerDecorationSupport {
 
 		if (fMatchingCharacterPainterColorKey != null && fMatchingCharacterPainterColorKey.equals(p)) {
 			if (fMatchingCharacterPainter != null) {
-				fMatchingCharacterPainter.setColor(getColor(fMatchingCharacterPainterColorKey));
+				Color color= getColor(fMatchingCharacterPainterColorKey);
+				fMatchingCharacterPainter.setColor(color);
+				fMatchingBracketsAnnotation.setColor(color);
 				fMatchingCharacterPainter.paint(IPainter.CONFIGURATION);
 			}
-			return;
+			// do not return, the color needs to be updated for Overview ruler as well
 		}
 
 		if (fCursorLinePainterEnableKey != null && fCursorLinePainterEnableKey.equals(p)) {
@@ -694,8 +702,10 @@ public class SourceViewerDecorationSupport {
 	private void showMatchingCharacters() {
 		if (fMatchingCharacterPainter == null) {
 			if (fSourceViewer instanceof ITextViewerExtension2) {
-				fMatchingCharacterPainter= new MatchingCharacterPainter(fSourceViewer, fCharacterPairMatcher);
-				fMatchingCharacterPainter.setColor(getColor(fMatchingCharacterPainterColorKey));
+				Color color= getColor(fMatchingCharacterPainterColorKey);
+				fMatchingBracketsAnnotation= new MatchingBracketsAnnotation(color);
+				fMatchingCharacterPainter= new MatchingCharacterPainter(fSourceViewer, fCharacterPairMatcher, fMatchingBracketsAnnotation);
+				fMatchingCharacterPainter.setColor(color);
 				fMatchingCharacterPainter.setHighlightCharacterAtCaretLocation(isCharacterAtCaretLocationShown());
 				fMatchingCharacterPainter.setHighlightEnclosingPeerCharacters(areEnclosingPeerCharactersShown());
 				ITextViewerExtension2 extension= (ITextViewerExtension2) fSourceViewer;
