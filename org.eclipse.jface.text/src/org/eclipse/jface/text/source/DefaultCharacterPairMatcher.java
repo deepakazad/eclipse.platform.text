@@ -31,7 +31,8 @@ public class DefaultCharacterPairMatcher implements ICharacterPairMatcher, IChar
 	private int fAnchor= -1;
 	private final CharPairs fPairs;
 	private final String fPartitioning;
-	private final boolean fCaretInsideMatchedPair;
+	private final boolean fCaretCanBeInsideMatchedPair;
+	private boolean fCaretInsideMatchedPair= false;
 
 	/**
 	 * Creates a new character pair matcher that matches the specified characters within the
@@ -75,7 +76,7 @@ public class DefaultCharacterPairMatcher implements ICharacterPairMatcher, IChar
 		Assert.isNotNull(partitioning);
 		fPairs= new CharPairs(chars);
 		fPartitioning= partitioning;
-		fCaretInsideMatchedPair= caretInsideMatchedPair;
+		fCaretCanBeInsideMatchedPair= caretInsideMatchedPair;
 	}
 
 	/**
@@ -238,7 +239,7 @@ public class DefaultCharacterPairMatcher implements ICharacterPairMatcher, IChar
 					return 1;
 				}
 			} else {
-				if (fCaretInsideMatchedPair && fPairs.isEndCharacter(document.getChar(offset - 1))) {
+				if (fCaretCanBeInsideMatchedPair && fPairs.isEndCharacter(document.getChar(offset - 1))) {
 					return -1;
 				}
 			}
@@ -255,19 +256,25 @@ public class DefaultCharacterPairMatcher implements ICharacterPairMatcher, IChar
 		final char prevChar= doc.getChar(Math.max(caretOffset - 1, 0));
 		boolean isForward;
 		final char ch;
-		if (fCaretInsideMatchedPair) {
+		if (fCaretCanBeInsideMatchedPair) {
 			final char currChar= doc.getChar(caretOffset);
 			isForward= fPairs.contains(prevChar) && fPairs.isStartCharacter(prevChar);
-			boolean isBackward= fPairs.contains(currChar) && !fPairs.isStartCharacter(currChar);
-			if (!isForward && !isBackward) {
+			boolean isBackward1= fPairs.contains(currChar) && !fPairs.isStartCharacter(currChar);
+			boolean isBackward2= fPairs.contains(prevChar) && !fPairs.isEndCharacter(currChar);
+			if (!isForward && !isBackward1 && !isBackward2) {
 				return null;
 			}
-			ch= isForward ? prevChar : currChar;
+			if(isBackward1)
+				fCaretInsideMatchedPair= true;
+			else if (isBackward2)
+				fCaretInsideMatchedPair= false;
+			ch= isBackward1 ? currChar : prevChar;
 		} else {
 			if (!fPairs.contains(prevChar))
 				return null;
 			isForward= fPairs.isStartCharacter(prevChar);
 			ch= prevChar;
+			fCaretInsideMatchedPair= false;
 		}
 
 		fAnchor= isForward ? ICharacterPairMatcher.LEFT : ICharacterPairMatcher.RIGHT;
